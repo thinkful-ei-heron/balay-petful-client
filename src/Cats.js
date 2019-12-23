@@ -10,16 +10,15 @@ export default class Cats extends React.Component {
     }
 
     adoptCat = () => {
+        if (this.state.cats.length > 0 && this.state.cat_users.length > 0) {
         services.adopt('cat')
           .then(res => {
             let catsArr = [];
             let cat_users = [];
-              console.log(res.cats)
               while (res.cats) {
                   catsArr.push(res.cats.value);
                   res.cats = res.cats.next;
               }
-              console.log(catsArr)
               this.setState({
                   cats: catsArr
               })
@@ -31,6 +30,10 @@ export default class Cats extends React.Component {
                 cat_users
               })
           })
+          .catch(err => {
+              console.error(err)
+          })
+        }
       }
 
       componentDidMount() {
@@ -62,6 +65,8 @@ export default class Cats extends React.Component {
           .catch(err => {
             console.error(err)
           })
+
+          this.interval = setInterval(() => this.adoptCat(), 20000)
       }
 
       addCatUser = (user) => {
@@ -88,7 +93,7 @@ export default class Cats extends React.Component {
 
     renderCats = () => {
         return (
-            <ul className="pet_list">
+            <>
                 {this.state.cats.map((cat, index) => {
                     return (
                     <li key={index} className="pet_li">
@@ -105,9 +110,10 @@ export default class Cats extends React.Component {
                     </div>
                 </li>
                     )})}
-            </ul>
+            </>
         )
     }
+
 
     renderUsers = () => {
         return (
@@ -147,10 +153,14 @@ export default class Cats extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        clearInterval(this.interval)
+    }
+
     render() {
         return (
             <>
-                <div className="waitlist">
+            <div className="waitlist">
                 {this.state.cat_users ? this.renderWaitlistInfo() : ''}
                 <button className="toggle_waitlist" onClick={this.toggleWaitlistExpand}>{this.state.waitlist ? 'Close Waitlist' : 'View Waitlist'}</button>
                 {this.state.waitlist ? 
@@ -166,7 +176,10 @@ export default class Cats extends React.Component {
                     <button type="submit">Submit</button>
                 </form>}
             </div>
+            <ul className="pet_list">
                 {this.state.cats ? this.renderCats() : ''}
+            </ul>
+                <div className="empty">{this.state.cats && this.state.cats.length > 0 ? '' : <h3>No cats available for adoption - check back later!</h3>}</div>
             </>
         )
     }

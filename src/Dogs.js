@@ -10,16 +10,17 @@ export default class Dogs extends React.Component {
     }
 
     adoptDog = () => {
+        if (this.state.dogs.length > 0 && this.state.dog_users.length > 0) {
         services.adopt('dog')
           .then(res => {
             let dogsArr = [];
             let dog_users = [];
               while (res.dogs) {
                   dogsArr.push(res.dogs.value);
-                  res.cats = res.dogs.next;
+                  res.dogs = res.dogs.next;
               }
               this.setState({
-                  cats: dogsArr
+                  dogs: dogsArr
               })
               while (res.users) {
                 dog_users.push(res.users.value);
@@ -29,6 +30,10 @@ export default class Dogs extends React.Component {
                 dog_users
               })
           })
+          .catch(err => {
+              console.error(err)
+          })
+        }
       }
 
       componentDidMount() {
@@ -60,6 +65,8 @@ export default class Dogs extends React.Component {
           .catch(err => {
             console.error(err)
           })
+
+          this.interval = setInterval(() => this.adoptDog(), 20000)
       }
 
       addDogUser = (user) => {
@@ -67,7 +74,7 @@ export default class Dogs extends React.Component {
             .then(res => {
               let user = res.last.value;
               this.setState({
-                dog_users: [...this.state.cat_users, user]
+                dog_users: [...this.state.dog_users, user]
               })
             })
             .catch(err => {
@@ -86,7 +93,7 @@ export default class Dogs extends React.Component {
 
     renderDogs = () => {
         return (
-            <ul className="pet_list">
+            <>
                 {this.state.dogs.map((dog, index) => {
                     return (
                     <li key={index} className="pet_li">
@@ -103,7 +110,7 @@ export default class Dogs extends React.Component {
                     </div>
                 </li>
                     )})}
-            </ul>
+            </>
         )
     }
 
@@ -145,6 +152,10 @@ export default class Dogs extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        clearInterval(this.interval)
+    }
+
     render() {
         return (
             <>
@@ -164,7 +175,10 @@ export default class Dogs extends React.Component {
                     <button type="submit">Submit</button>
                 </form>}
             </div>
+            <ul className="pet_list">
                 {this.state.dogs ? this.renderDogs() : ''}
+            </ul>
+                <div className="empty">{this.state.dogs && this.state.dogs.length > 0 ? '' : <h3>No dogs available for adoption - check back later!</h3>}</div>
             </>
         )
     }
