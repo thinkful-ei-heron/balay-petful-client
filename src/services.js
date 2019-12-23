@@ -2,7 +2,7 @@ import config from './config';
 
 const services = {
   getDogs() {
-    return fetch(`${config.API_ENDPOINT}/dogs`)
+    return fetch(`${config.REACT_APP_API_ENDPOINT}/dogs`)
       .then(res => 
           !res.ok
            ? res.json().then(e => Promise.reject(e))
@@ -11,7 +11,7 @@ const services = {
   },
 
   getCats() {
-      return fetch(`${config.API_ENDPOINT}/cats`)
+      return fetch(`${config.REACT_APP_API_ENDPOINT}/cats`)
         .then(res =>
           !res.ok
             ? res.json().then(e => Promise.reject(e))
@@ -20,7 +20,7 @@ const services = {
   },
 
   getDogUsers() {
-      return fetch(`${config.API_ENDPOINT}/dog_users`)
+      return fetch(`${config.REACT_APP_API_ENDPOINT}/dog_users`)
         .then(res =>
           !res.ok
             ? res.json().then(e => Promise.reject(e))
@@ -29,7 +29,7 @@ const services = {
   },
 
   getCatUsers() {
-    return fetch(`${config.API_ENDPOINT}/cat_users`)
+    return fetch(`${config.REACT_APP_API_ENDPOINT}/cat_users`)
       .then(res =>
         !res.ok
           ? res.json().then(e => Promise.reject(e))
@@ -38,7 +38,7 @@ const services = {
   },
   
   adopt(type) {
-      return fetch(`${config.API_ENDPOINT}/adopt/${type}`)
+      return fetch(`${config.REACT_APP_API_ENDPOINT}/adopt/${type}`)
         .then(res =>
           !res.ok
             ? res.json().then(e => Promise.reject(e))
@@ -48,7 +48,7 @@ const services = {
 
   postDogUser(user) {
       const userObj = { user: user}
-      return fetch(`${config.API_ENDPOINT}/dog_users`, {
+      return fetch(`${config.REACT_APP_API_ENDPOINT}/dog_users`, {
           method: 'POST',
           headers: {
               'content-type': 'application/json'
@@ -66,7 +66,7 @@ const services = {
     const userObj = {
         user: user
     }
-    return fetch(`${config.API_ENDPOINT}/cat_users`, {
+    return fetch(`${config.REACT_APP_API_ENDPOINT}/cat_users`, {
         method: 'POST',
         headers: {
             'content-type': 'application/json'
@@ -81,7 +81,7 @@ const services = {
   },
 
   getSuccess() {
-      return fetch(`${config.API_ENDPOINT}/success`)
+      return fetch(`${config.REACT_APP_API_ENDPOINT}/success`)
         .then(res => 
             !res.ok
               ? res.json().then(e => Promise.reject(e))
