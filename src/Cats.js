@@ -1,5 +1,6 @@
 import React from 'react';
 import services from './services';
+import swal from 'sweetalert';
 
 export default class Cats extends React.Component {
 
@@ -9,8 +10,41 @@ export default class Cats extends React.Component {
         cat_users: null
     }
 
+    userAdopt = () => {
+        services.adopt('cat')
+          .then(res => {
+            let catsArr = [];
+            let cat_users = [];
+              while (res.cats) {
+                  catsArr.push(res.cats.value);
+                  res.cats = res.cats.next;
+              }
+              this.setState({
+                  cats: catsArr
+              })
+              while (res.users) {
+                cat_users.push(res.users.value);
+                res.users = res.users.next;
+              }
+              this.setState({
+                cat_users
+              })
+              swal({
+                title: 'Congratulations!',
+                text: 'You have successfully adopted your new best friend!',
+                icon: 'success',
+                timer: 2000,
+                button: false
+              })
+              this.props.history.push('/success_stories')
+          })
+          .catch(err => {
+              console.error(err)
+          })
+    }
+
     adoptCat = () => {
-        if (this.state.cats.length > 0 && this.state.cat_users.length > 0) {
+        if (this.state.cats.length > 1 && this.state.cat_users.length > 1) {
         services.adopt('cat')
           .then(res => {
             let catsArr = [];
@@ -145,7 +179,10 @@ export default class Cats extends React.Component {
             return <h3>There are currently {count} people ahead of you on the waitlist.</h3>
         }
         if (user_index === 0) {
-            return <h3>It is now your turn to adopt!</h3>
+            return <div className="adopt_container">
+            <h3>It is now your turn to adopt!</h3>
+            <button onClick={this.userAdopt}>Adopt next cat in line</button>
+            </div>
         }
         }
         else {

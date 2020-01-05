@@ -1,5 +1,6 @@
 import React from 'react';
 import services from './services';
+import swal from 'sweetalert';
 
 export default class Dogs extends React.Component {
 
@@ -9,8 +10,41 @@ export default class Dogs extends React.Component {
         dog_users: null
     }
 
+    userAdopt = () => {
+        services.adopt('dog')
+          .then(res => {
+            let dogsArr = [];
+            let dog_users = [];
+              while (res.dogs) {
+                  dogsArr.push(res.dogs.value);
+                  res.dogs = res.dogs.next;
+              }
+              this.setState({
+                  dogs: dogsArr
+              })
+              while (res.users) {
+                dog_users.push(res.users.value);
+                res.users = res.users.next;
+              }
+              this.setState({
+                dog_users
+              })
+              swal({
+                title: 'Congratulations!',
+                text: 'You have successfully adopted your new best friend!',
+                icon: 'success',
+                timer: 2000,
+                button: false
+              })
+              this.props.history.push('/success_stories')
+          })
+          .catch(err => {
+              console.error(err)
+          })
+    }
+
     adoptDog = () => {
-        if (this.state.dogs.length > 0 && this.state.dog_users.length > 0) {
+        if (this.state.dogs.length > 1 && this.state.dog_users.length > 1) {
         services.adopt('dog')
           .then(res => {
             let dogsArr = [];
@@ -144,7 +178,10 @@ export default class Dogs extends React.Component {
             return <h3>There are currently {count} people ahead of you on the waitlist.</h3>
         }
         if (user_index === 0) {
-            return <h3>It is now your turn to adopt!</h3>
+            return <div className="adopt_container">
+                <h3>It is now your turn to adopt!</h3>
+                <button onClick={this.userAdopt}>Adopt next dog in line</button>
+                </div>
         }
         }
         else {
